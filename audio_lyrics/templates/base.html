@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'css/loading.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css"/>
+    <title>Music Lyrics Generator</title>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100 font-sans antialised">
+
+    <!-- Navbar-->
+
+    <nav class="bg-blue-600 p-4 text-white flex justify-between">
+        {% if user.is_authenticated %}
+            <div>
+                <h1 class="text-3xl font-bold">Music Lyrics Generator</h1>
+            </div>
+            <div>
+                <a href="#" class="text-white hover:underline">Logout</a>
+            </div>
+        {% else %}
+            <div>
+                <a href="login/" class="text-white hover:underline">Login</a>
+                <a href="#" class="text-white hover:underline">Signup</a>
+            </div>
+        {% endif %}
+    </nav>
+
+    <br/>
+    <br/>
+    
+    {% block content %}
+    {% endblock %}
+
+    <footer class="text-center p-4 text-black mt-6">
+        powered by <a>maykay of the source</a>
+    </footer>
+
+    <script>
+
+    </script>
+</body>
+</html>

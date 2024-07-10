@@ -3,10 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 
 def index(request):
-    pass
+    return render(request, 'index.html')
 
 def user_login(request):
-    pass
+    return render(request, 'user_auth/login.html')
 
 def user_registration(request):
     pass
