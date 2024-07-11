@@ -9,7 +9,7 @@ def user_login(request):
     return render(request, 'user_auth/login.html')
 
 def user_registration(request):
-    pass
+    return render(request, 'user_auth/registration.html')
 
 def user_logout(request):
     pass
