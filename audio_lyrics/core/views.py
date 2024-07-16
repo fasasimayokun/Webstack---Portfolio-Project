@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 from .models import MusicPost
@@ -13,72 +12,98 @@ import assemblyai as aai
 import json
 import openai
 import os
+import time
+
+from .forms import MusicForm
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 # Create your views here.
 
 def index(request):
-    return render(request, 'index.html')
+    form = MusicForm()
+    return render(request, 'index.html', {'form': form})
 
-@csrf_exempt
 def generate_lyrics(request):
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            music_file = data['file']
-        except (KeyError, json.JSONDecodeError):
-            return JsonResponse({'error': 'Invalid data sent'}, status=400)
+        form = MusicForm(request.POST, request.FILES)
+        if form.is_valid():
+            music_path = form.save()
         
+        # get the 
+    
+            transcription = get_transcription(music_path.music_file.path)
+            if not transcription:
+                print("no transcription")
+                return# return JsonResponse({'error': "Failed to get transcript"}, status=500)
+
+            # # use openAI to generate the blog
+            # music_content = generate_blog_from_transcription(transcription)
+            # print(music_content)
+            #     return# return JsonResponse({'error': "Failed to generate blog article"}, status=500)
+
+            # save blog article to database
+            music_post = MusicPost.objects.create(
+                user = request.user,
+                music_path = music_path,
+                generated_lyrics = transcription,
+            )
         
-        # get the transcript
-        transcription = get_transcription(music_file)
-        if not transcription:
-            return JsonResponse({'error': "Failed to get transcript"}, status=500)
-
-        # use openAI to generate the blog
-        music_content = generate_blog_from_transcription(transcription)
-        if not music_content:
-            return JsonResponse({'error': "Failed to generate blog article"}, status=500)
-
-        # save blog article to database
-        music_lyrics = MusicPost.objects.create(user=request.user, music_file=music_file, artist='', generated_lyrics='')
-        music_lyrics.save(commit=False)
-        audio = MP3(music_lyrics.music_file.path, ID3=EasyID3)
-        music_artist = audio.get('artist', [None])[0] or music_lyrics.artist
-
-        music_lyrics = MusicPost.objects.create(user=request.user,
-                                         music_file=music_file,
-                                         artist=music_artist,
-                                         generated_lyrics=music_content)
-        music_lyrics.save()
-
-        # return blog article as a response
-        return JsonResponse({'content': music_content})
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+            music_post.save()
+            
+            if music_post.generated_lyrics:
+                generated_lyrics = music_post.generated_lyrics
+                return render(request, 'display.html', {'content': generated_lyrics})
+            
+            # return blog article as a response
+            return render(request, 'index.html', {'content': get_transcription})
+        else:
+            print("something is wrong with the file")
+    # else:
+    #     form = MusicForm()
+    # return render(request, 'index.html', {'form': form})
         
-        
-def get_transcription(music_file):
-    audio_file = music_file
+
+def get_transcription(music_path):
     aai.settings.api_key = os.getenv('ASSEMBLYAI_KEY')
 
     transcriber = aai.Transcriber()
-    transcript = transcriber.transcribe(audio_file)
-    print(transcript.text)
+
+    audio_url = music_path
+
+    config = aai.TranscriptionConfig(speaker_labels=True)
+
+    transcript = transcriber.transcribe(audio_url, config)
+    if transcript.status == aai.TranscriptStatus.error:
+        print(transcript.error)
+    
     return transcript.text
 
-def generate_blog_from_transcription(transcription):
-    openai.api_key = os.getenv("OPENAI_KEY")
+# def generate_blog_from_transcription(transcription):
+#     openai.api_key = os.getenv('ASSEMBLYAI_KEY')
 
-    prompt = f"Based on the following transcript from a music file, write a comprehensive understanding and insight of the music lyrics, write it based on the transcript, but dont make it easy to understand:\n\n{transcription}\n\nMusic Lyrics:"
+#     prompt = f"Based on the following transcript from a music file, write a comprehensive understanding and insight of the music lyrics, write it based on the transcript, but dont make it easy to understand:\n\n{transcription}\n\nMusic Lyrics:"
 
-    response = openai.Completion.create(
-        model = "gpt-3.5-turbo",
-        prompt = prompt,
-        max_tokens = 1000
-    )
+    
+#     try:
+#         response = openai.Completion.create(
+#             model="text-embedding-3-large	",
+#             prompt=prompt,
+#             max_tokens=150
+#         )
+#         generated_content = response.choices[0].text.strip()
+#         return generated_content
+#     except openai.error.RateLimitError:
+#         print("Rate limit exceeded. Retrying in 10 seconds...")
+#     except openai.error.OpenAIError as e:
+#         print(f"An error occurred: {e}")
 
-    generated_content = response.choices[0].text.strip()
 
-    return generated_content
+
+def display_lyrics(request):
+    
+    music_post = MusicPost.objects.all()
+    return render(request, 'display.html', {'contents': music_post})
 
 def user_login(request):
     

@@ -1,7 +1,7 @@
-from django.forms import forms
-from .models import MusicPost
+from django import forms
+from .models import MusicPath
 
 class MusicForm(forms.ModelForm):
     class Meta:
-        model = MusicPost
-        fields = ['artist', 'created_at', 'updated_at']
+        model = MusicPath
+        fields = ['music_file',]
