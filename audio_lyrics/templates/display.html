@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% for content in contents %}
-        {{ content.user }} <br>
-        {{ content.music_path }}<br>
-        {{ content.generated_lyrics }}<br>
-        {{ content.created_at }} <br> <br>
-    {% endfor %}
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <section>
+            <h2 class="text-xl mb-4 font-semibold">All Transcribed files</h2>
+            <div class="space-y-4">
+                {% for transcript in transcripts %}
+                <div class="border border-gray-300 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold">{{ transcript.music_path }}</h3>
+                    <p>{{ transcript.generated_lyrics }}</p>
+                    <p>{{ transcript.created_at }}</p>
+                    <a href="{% url 'transcript-detail' transcript.id %}">show more</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>    
+    </div>
+    
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div>
+        <section>
+            <h2 class="text-xl mb-4 font-semibold">Transcribe Music File Details</h2>
+            <div class="border border-gray-300 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold">{{ transcript.music_path }}</h3>
+                <p class="text-gray-700">{{ transcript.generated_lyrics }}</p>
+                <hr class="my-4 border-gray-300">
+                <h4 class="text-lg font-semibold">{{ transcript.created_at }}</h4>
+                <a href="{% url 'update-transcript' transcript.id %}" class="btn btn-info">Edit transcribe</a>
+
+                &nbsp;
+
+                <a href="{% url 'delete-transcript' transcript.id %}" class="btn btn-danger">Delete</a>
+            </div>
+        </section>
+    </div>
+{% endblock %}

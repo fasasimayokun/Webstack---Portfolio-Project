@@ -23,7 +23,7 @@
                         <form method="POST" enctype="multipart/form-data" action="{% url 'generate-lyrics' %}">
                             {% csrf_token %}
                             {{ form.as_p }}
-                            <button type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition-colors">Generate</button>
+                            <button id="generateMusicButton" type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition-colors">Generate</button>
                         </form>
                         
                     <!-- </div> -->

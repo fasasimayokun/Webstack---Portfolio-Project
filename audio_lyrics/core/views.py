@@ -6,18 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from .models import MusicPost
-from mutagen.easyid3 import EasyID3
-from mutagen.mp3 import MP3
 import assemblyai as aai
-import json
 import openai
 import os
-import time
 
 from .forms import MusicForm
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from django.conf import settings
+from django.contrib import messages
 # Create your views here.
 
 def index(request):
@@ -30,17 +24,11 @@ def generate_lyrics(request):
         if form.is_valid():
             music_path = form.save()
         
-        # get the 
+            # get the transcription 
     
             transcription = get_transcription(music_path.music_file.path)
             if not transcription:
-                print("no transcription")
-                return# return JsonResponse({'error': "Failed to get transcript"}, status=500)
-
-            # # use openAI to generate the blog
-            # music_content = generate_blog_from_transcription(transcription)
-            # print(music_content)
-            #     return# return JsonResponse({'error': "Failed to generate blog article"}, status=500)
+                return JsonResponse({'error': "Failed to get transcript"}, status=500)
 
             # save blog article to database
             music_post = MusicPost.objects.create(
@@ -50,20 +38,15 @@ def generate_lyrics(request):
             )
         
             music_post.save()
-            
-            if music_post.generated_lyrics:
-                generated_lyrics = music_post.generated_lyrics
-                return render(request, 'display.html', {'content': generated_lyrics})
-            
-            # return blog article as a response
-            return render(request, 'index.html', {'content': get_transcription})
+            messages.success(request, "Music file successfully transcribe!")
+            return redirect("display")
+            # return the generated lyrics as response
+            generated_lyrics = music_post.generated_lyrics
+            if generated_lyrics:
+                return JsonResponse({'content': generated_lyrics})
         else:
             print("something is wrong with the file")
-    # else:
-    #     form = MusicForm()
-    # return render(request, 'index.html', {'form': form})
         
-
 def get_transcription(music_path):
     aai.settings.api_key = os.getenv('ASSEMBLYAI_KEY')
 
@@ -99,11 +82,52 @@ def get_transcription(music_path):
 #         print(f"An error occurred: {e}")
 
 
-
-def display_lyrics(request):
+def display_transcripts(request):
     
-    music_post = MusicPost.objects.all()
-    return render(request, 'display.html', {'contents': music_post})
+    music_post = MusicPost.objects.filter(user=request.user)
+    return render(request, 'display.html', {'transcripts': music_post})
+
+
+def update_transcript(request, pk):
+    transcript = MusicPost.objects.get(id=pk)
+
+    form = MusicForm(instance=transcript)
+
+    if request.method == "POST":
+        form = MusicForm(request.POST, instance=transcript)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, "Your transcript was edited successfully!")
+
+            return redirect("transcript-detail")
+
+    context = {"form": form}
+
+    return render(request, "update-transcribe.html", context)
+
+
+# read / view a singular record
+
+def singular_transcript(request, pk):
+    transcribed_music = MusicPost.objects.get(id=pk)
+
+    context = {"content": transcribed_music}
+    return render(request, "transcript-detail.html", context)
+
+
+# delete a record
+
+def delete_transcript(request, pk):
+    transcript = MusicPost.objects.get(id=pk)
+
+    transcript.delete()
+
+    messages.success(request, "Your transcript was deleted!")
+
+    return redirect("display")
+
 
 def user_login(request):
     
