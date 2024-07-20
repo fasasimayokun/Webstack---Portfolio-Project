@@ -7,12 +7,17 @@
                 <h3 class="text-lg font-semibold">{{ transcript.music_path }}</h3>
                 <p class="text-gray-700">{{ transcript.generated_lyrics }}</p>
                 <hr class="my-4 border-gray-300">
-                <h4 class="text-lg font-semibold">{{ transcript.created_at }}</h4>
-                <a href="{% url 'update-transcript' transcript.id %}" class="btn btn-info">Edit transcribe</a>
-
+                <h4 class="text-lg font-semibold">Created: {{ transcript.created_at }}</h4>
+                {% if is_edited %}
+                    <h4 class="text-lg font-semibold">Updated: {{ transcript.updated_at }}</h4>
+                {% endif %}
+                <br>
+                <div>
+                    <a href="{% url 'update-transcript' transcript.id %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
                 &nbsp;
-
-                <a href="{% url 'delete-transcript' transcript.id %}" class="btn btn-danger">Delete</a>
+                <a href="{% url 'delete-transcript' transcript.id %}" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Delete</a>
+                </div>
+                
             </div>
         </section>
     </div>

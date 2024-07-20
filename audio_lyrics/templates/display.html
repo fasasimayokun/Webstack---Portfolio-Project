@@ -4,12 +4,13 @@
         <section>
             <h2 class="text-xl mb-4 font-semibold">All Transcribed files</h2>
             <div class="space-y-4">
-                {% for transcript in transcripts %}
+                {% for transcript in transcripts reversed %}
                 <div class="border border-gray-300 p-4 rounded-lg">
                     <h3 class="text-lg font-semibold">{{ transcript.music_path }}</h3>
-                    <p>{{ transcript.generated_lyrics }}</p>
+                    <p>{{ transcript.generated_lyrics|truncatewords:80 }}</p>
                     <p>{{ transcript.created_at }}</p>
-                    <a href="{% url 'transcript-detail' transcript.id %}">show more</a>
+                    <br>
+                    <a href="{% url 'transcript-detail' transcript.id %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">more..</a>
                 </div>
                 {% endfor %}
             </div>
