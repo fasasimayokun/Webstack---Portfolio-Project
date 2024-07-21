@@ -49,7 +49,7 @@ def generate_transcript(request):
             messages.success(request, "Music file successfully transcribed!")
 
             # redirects user back to the index page
-            return redirect("/")
+            return redirect("display-transcripts")
         else:
             print("something is wrong with the file")
 
@@ -132,7 +132,7 @@ def delete_transcript(request, pk):
     transcript = MusicPost.objects.get(id=pk)
     transcript.delete()
     messages.success(request, "The transcript was successfully deleted!")
-    return redirect("/")
+    return redirect("display-transcripts")
 
 
 def user_login(request):

@@ -6,7 +6,7 @@
             <div class="space-y-4">
                 {% for transcript in transcripts reversed %}
                 <div class="border border-gray-300 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold">{{ transcript.music_path }}</h3>
+                    <h3 class="text-lg font-semibold">{{ transcript.transcript_name }}</h3>
                     <p>{{ transcript.generated_lyrics|truncatewords:80 }}</p>
                     <p>{{ transcript.created_at }}</p>
                     <br>

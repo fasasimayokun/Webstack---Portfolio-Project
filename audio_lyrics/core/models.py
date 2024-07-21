@@ -19,6 +19,10 @@ class MusicPost(models.Model):
     @property
     def is_edited(self):
         return self.created_at != self.updated_at
+    
+    @property
+    def transcript_name(self):
+        return os.path.basename(self.music_path.music_file.name)
 
     def __str__(self):
         return f"{self.user.username} - {os.path.basename(self.music_path.music_file.name)}"
