@@ -7,14 +7,14 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css"/>
-    <title>Music Lyrics Generator</title>
+    <title>Audio File Transcripts Generator</title>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-100 font-sans antialised">
 
     <!-- the nav bar -->
     <nav class="bg-blue-600 p-4 text-white flex">
         <div class="flex-1">
-            <h1 class="text-3xl font-bold"><a href="{% url 'index' %}">Music Lyrics Generator</a></h1>
+            <h1 class="text-3xl font-bold"><a href="{% url 'index' %}">Audio Transcripts Generator</a></h1>
         </div>
         <div class="flex items-center space-x-4">
             {% if user.is_authenticated %}
