@@ -5,6 +5,12 @@ class MusicForm(forms.ModelForm):
     class Meta:
         model = MusicPath
         fields = ['music_file',]
+        widgets = {
+            'music_file': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'style': 'border: 2px solid #ccc; padding: 10px; border-radius: 10px;'
+            }),
+        }
 
 
 class MusicUpdate(forms.ModelForm):
