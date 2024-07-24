@@ -12,6 +12,8 @@
                     <br>
                     <a href="{% url 'transcript-detail' transcript.id %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">more..</a>
                 </div>
+                {% empty %}
+                    <p>No transcripts avaliable, go back and input an audio file. Thank You!</p>
                 {% endfor %}
             </div>
         </section>    
